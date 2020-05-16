@@ -1,0 +1,28 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "dist",
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "importHelpers": true,
+    "target": "ES2019",
+    "lib": [
+      "ES2019"
+    ],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "node",
+      "yargs"
+    ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

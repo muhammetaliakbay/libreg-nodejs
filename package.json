@@ -1,0 +1,31 @@
+{
+  "name": "@muhammetaliakbay/libreg-nodejs",
+  "version": "1.0.0",
+  "description": "NodeJS port of LibReg based on Mozilla sources",
+  "main": "./dist/libreg.js",
+  "types": "./dist/libreg.d.ts",
+  "bin": {
+    "libreg": "./dist/libreg-bin.js"
+  },
+  "scripts": {
+    "publish-public": "npm publish --access public",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf ./dist",
+    "build": "(npm run clean) && (tsc)",
+    "install": "(npm run build)"
+  },
+  "repository": "https://github.com/muhammetaliakbay/libreg-nodejs",
+  "keywords": [],
+  "author": "https://github.com/muhammetaliakbay",
+  "license": "GNU3",
+  "devDependencies": {
+    "@types/node": "^13.11.0",
+    "@types/yargs": "^15.0.5",
+    "rimraf": "^3.0.2",
+    "tslib": "^2.0.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "yargs": "^15.3.1"
+  }
+}
