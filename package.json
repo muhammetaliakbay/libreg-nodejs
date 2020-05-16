@@ -1,6 +1,6 @@
 {
   "name": "@muhammetaliakbay/libreg-nodejs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "NodeJS port of LibReg based on Mozilla sources",
   "main": "./dist/libreg.js",
   "types": "./dist/libreg.d.ts",

@@ -27,13 +27,13 @@ export function entryType(type: number):
     RegisterType.ENTRY_STRING | RegisterType.ENTRY_INT32_ARRAY | RegisterType.ENTRY_BYTES | RegisterType.ENTRY_FILE
 {
     const low = type & 0x0ff;
-    if (type === RegisterType.ENTRY_STRING) {
+    if (low === RegisterType.ENTRY_STRING) {
         return RegisterType.ENTRY_STRING;
-    } else if (type === RegisterType.ENTRY_INT32_ARRAY) {
+    } else if (low === RegisterType.ENTRY_INT32_ARRAY) {
         return RegisterType.ENTRY_INT32_ARRAY;
-    } else if (type === RegisterType.ENTRY_BYTES) {
+    } else if (low === RegisterType.ENTRY_BYTES) {
         return RegisterType.ENTRY_BYTES;
-    } else if (type === RegisterType.ENTRY_FILE) {
+    } else if (low === RegisterType.ENTRY_FILE) {
         return RegisterType.ENTRY_FILE;
     } else {
         throw new Error('invalid entry type: ' + type.toString(16));
@@ -111,12 +111,34 @@ export class RegisterKey extends Register {
         }
     }
 
+    findKey(path: string): RegisterKey | null {
+        const parts = path.split('/');
+        let next: RegisterKey = this;
+        for (const part of parts) {
+            if (part !== '') {
+                next = next.findChildKey(part);
+                if (next == null) {
+                    return null;
+                }
+            }
+        }
+        return next;
+    }
+
+    findChildKey(name: string): RegisterKey | null {
+        return this.scanChildKeys().find(childKey => childKey.name === name);
+    }
+    findChildValue(name: string): string | Int32Array | Buffer | Error | null {
+        return this.scanChildValues().find(childValue => childValue.name === name)?.value;
+    }
+
     scanChildKeys(): RegisterKey[] {
         const ret: RegisterKey[] = [];
 
         let next = this.firstSubKey;
         while (next != null) {
-            ret.push(next);
+            if (!next.isDeleted())
+                ret.push(next);
             next = next.left as RegisterKey;
         }
 
@@ -128,7 +150,8 @@ export class RegisterKey extends Register {
 
         let next = this.firstSubEntry;
         while (next != null) {
-            ret.push(next);
+            if (!next.isDeleted())
+                ret.push(next);
             next = next.left as RegisterValue;
         }
 
@@ -179,7 +202,7 @@ export class RegisterValue extends Register {
     }
     toJSON(): {
         name: string,
-        value: string | null,
+        value: string | number[] | {bytes: string} | {error: string} | null,
         deleted: boolean
     } {
         return {
@@ -188,11 +211,11 @@ export class RegisterValue extends Register {
                 if (this.value == null) {
                     return null;
                 } else if (this.value instanceof Buffer) {
-                    return this.value.toString('hex');
+                    return {bytes: this.value.toString('hex')};
                 } else if(this.value instanceof Int32Array) {
-                    return this.value.join(', ');
+                    return [...this.value];
                 } else if(this.value instanceof Error) {
-                    return this.value.name + ' ' + this.value.message;
+                    return {error: this.value.name + ' ' + this.value.message};
                 } else if (typeof this.value === 'string') {
                     return this.value;
                 } else {
